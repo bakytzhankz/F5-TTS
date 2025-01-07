@@ -245,7 +245,7 @@ def load_dataset(
     print("Loading dataset ...")
 
     if dataset_type == "CustomDataset":
-        rel_data_path = str(files("f5_tts").joinpath(f"../../data/{dataset_name}/M1"))
+        rel_data_path = str(files("f5_tts").joinpath(f"../../data/{dataset_name}/dataset/M1"))
         if audio_type == "raw":
             try:
                 train_dataset = Dataset_.from_file(f"{rel_data_path}/output/raw.arrow")
