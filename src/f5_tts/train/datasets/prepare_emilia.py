@@ -23,15 +23,15 @@ from f5_tts.model.utils import (
 )
 
 
-out_zh = {
-    "ZH_B00041_S06226",
-    "ZH_B00042_S09204",
-    "ZH_B00065_S09430",
-    "ZH_B00065_S09431",
-    "ZH_B00066_S09327",
-    "ZH_B00066_S09328",
-}
-zh_filters = ["い", "て"]
+# out_zh = {
+#     "ZH_B00041_S06226",
+#     "ZH_B00042_S09204",
+#     "ZH_B00065_S09430",
+#     "ZH_B00065_S09431",
+#     "ZH_B00066_S09327",
+#     "ZH_B00066_S09328",
+# }
+# zh_filters = ["い", "て"]
 # seems synthesized audios, or heavily code-switched
 out_en = {
     "EN_B00013_S00913",
@@ -211,13 +211,14 @@ if __name__ == "__main__":
     tokenizer = "pinyin"  # "pinyin" | "char"
     polyphone = True
 
-    langs = ["ZH", "EN"]
+    langs = ["KZ"]
     dataset_dir = "<SOME_PATH>/Emilia_Dataset/raw"
-    dataset_name = f"Emilia_{'_'.join(langs)}_{tokenizer}"
+    # dataset_name = f"Emilia_{'_'.join(langs)}_{tokenizer}"
+    dataset_name = "f-tts-kazakh"
     save_dir = str(files("f5_tts").joinpath("../../")) + f"/data/{dataset_name}"
     print(f"\nPrepare for {dataset_name}, will save to {save_dir}\n")
 
-    main()
+    # main()
 
     # Emilia               ZH & EN
     # samples count       37837916   (after removal)

@@ -245,17 +245,14 @@ def load_dataset(
     print("Loading dataset ...")
 
     if dataset_type == "CustomDataset":
-        rel_data_path = str(files("f5_tts").joinpath(f"../../data/{dataset_name}_{tokenizer}"))
+        rel_data_path = str(files("f5_tts").joinpath(f"../../data/{dataset_name}/M1"))
         if audio_type == "raw":
             try:
-                train_dataset = load_from_disk(f"{rel_data_path}/raw")
+                train_dataset = Dataset_.from_file(f"{rel_data_path}/output/raw.arrow")
             except:  # noqa: E722
-                train_dataset = Dataset_.from_file(f"{rel_data_path}/raw.arrow")
+                train_dataset = load_from_disk(f"{rel_data_path}/output/raw")
             preprocessed_mel = False
-        elif audio_type == "mel":
-            train_dataset = Dataset_.from_file(f"{rel_data_path}/mel.arrow")
-            preprocessed_mel = True
-        with open(f"{rel_data_path}/duration.json", "r", encoding="utf-8") as f:
+        with open(f"{rel_data_path}/output/duration.json", "r", encoding="utf-8") as f:
             data_dict = json.load(f)
         durations = data_dict["duration"]
         train_dataset = CustomDataset(

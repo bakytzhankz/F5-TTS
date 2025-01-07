@@ -1,47 +1,46 @@
-hydra:
-  run:
-    dir: ckpts/${model.name}_${model.mel_spec.mel_spec_type}_${model.tokenizer}_${datasets.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
-    
+run:
+  dir: ckpts/${model.name}_${model.mel_spec.mel_spec_type}_${model.tokenizer}_${datasets.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+
 datasets:
-  name: Emilia_ZH_EN  # dataset name
-  batch_size_per_gpu: 38400  # 8 GPUs, 8 * 38400 = 307200
-  batch_size_type: frame  # "frame" or "sample"
-  max_samples: 64  # max sequences per batch if use frame-wise batch_size. we set 32 for small models, 64 for base models
-  num_workers: 16
+  name: f5-tts-kazakh # Your custom dataset
+  batch_size_per_gpu: 38400 # 8 GPUs, 8 * 38400 = 307200 frames in total
+  batch_size_type: frame # "frame" ensures a frame-wise batch size
+  max_samples: 64 # Set to 64 for larger base models
+  num_workers: 16 # Adequate number of workers for large datasets
 
 optim:
-  epochs: 15
-  learning_rate: 7.5e-5
-  num_warmup_updates: 20000  # warmup steps
-  grad_accumulation_steps: 1  # note: updates = steps / grad_accumulation_steps
-  max_grad_norm: 1.0  # gradient clipping
-  bnb_optimizer: False  # use bnb 8bit AdamW optimizer or not
+  epochs: 15 # Number of epochs to train
+  learning_rate: 7.5e-5 # Optimized learning rate
+  num_warmup_updates: 20000 # Warm-up steps for smooth convergence
+  grad_accumulation_steps: 1 # For better gradient accumulation per step
+  max_grad_norm: 1.0 # To prevent gradient explosion
+  bnb_optimizer: False # Using 8-bit AdamW optimizer is optional, False for now for better control
 
 model:
-  name: F5TTS_Base  # model name
-  tokenizer: pinyin  # tokenizer type
-  tokenizer_path: None  # if tokenizer = 'custom', define the path to the tokenizer you want to use (should be vocab.txt)
+  name: F5TTS_Base # Base model for balanced performance
+  tokenizer: custom # Tokenizer for handling Kazakh language
+  tokenizer_path: data/f5-tts-kazakh/dataset/M1/output/vocab.txt # Use default tokenizer path unless using custom
   arch:
-    dim: 1024
-    depth: 22
-    heads: 16
-    ff_mult: 2
-    text_dim: 512
-    conv_layers: 4
-    checkpoint_activations: False  # recompute activations and save memory for extra compute
+    dim: 1024 # Model dimensionality for sufficient capacity
+    depth: 22 # Depth of the Transformer model
+    heads: 16 # Number of attention heads
+    ff_mult: 2 # Feed-forward network multiplier
+    text_dim: 512 # Dimensionality of text embedding
+    conv_layers: 4 # Convolutional layers for better feature extraction
+    checkpoint_activations: False # False to save memory, but may require recomputation
   mel_spec:
-    target_sample_rate: 24000
-    n_mel_channels: 100
-    hop_length: 256
-    win_length: 1024
-    n_fft: 1024
-    mel_spec_type: vocos  # 'vocos' or 'bigvgan'
+    target_sample_rate: 24000 # Target sample rate for the audio
+    n_mel_channels: 100 # Number of Mel channels (adjust based on memory and performance tradeoff)
+    hop_length: 256 # Hop length for spectrogram computation
+    win_length: 1024 # Window length for FFT
+    n_fft: 1024 # FFT size
+    mel_spec_type: vocos # Use 'vocos' or 'bigvgan' based on your experiment setup
   vocoder:
-    is_local: False  # use local offline ckpt or not
-    local_path: None  # local vocoder path
+    is_local: False # Set to False to use an external vocoder
+    local_path: None # Specify local vocoder path if needed
 
 ckpts:
-  logger: wandb  # wandb | tensorboard | None
-  save_per_updates: 50000  # save checkpoint per steps
-  last_per_steps: 5000  # save last checkpoint per steps
+  logger: wandb # Use WandB for logging (or switch to tensorboard if preferred)
+  save_per_updates: 50000 # Save checkpoint every 50k steps
+  last_per_steps: 5000 # Save final checkpoints every 5000 steps
   save_dir: ckpts/${model.name}_${model.mel_spec.mel_spec_type}_${model.tokenizer}_${datasets.name}
